@@ -1,0 +1,102 @@
+import numpy as np
+import ast
+
+#This script contains four functions. 
+#The first one creates an array of a given size
+#and occupies the array where tubes can be found, specified by coordinates given in the input file
+def myinitarray(init, size): 
+    init_ar = np.array(init) 
+    zero_ar = np.zeros((size,size), dtype=int)
+    final_ar = zero_ar[init_ar[:,0], init_ar[:,1]]  = 1       
+    
+    return zero_ar
+
+#The second function moves a tube from one location to another; the coordinates of both origin and destination
+#are specified in the input file. 
+#The arguments it needs are an array on which to perform the action and the positions (tuples) 
+#that it needs to survey in order to perform the move
+#The function ensures that a tube is indeed found at the initial coordinates
+#and that the destination is empty before moving. If so, an output file is written, confirming the move.
+
+def move_tube(array,origin,destination):
+    if array[destination] == 1:
+        print("Cannot move tube at position "+str(destination)+" because it is already occupied")
+    else:
+        if array[origin] != 0:
+            array[destination] = 1
+            array[origin] = 0
+            print("Tube moved from "+str(origin)+" to "+str(destination))  
+            f = open('myoutput.txt','w')
+            f.write(str(origin)+str(destination)+" MOVED\n")
+            f.close()
+        else:
+            print("There is no tube at position "+str(origin))
+        
+    return 
+
+#This function removes a tube from a given location after checking that there is indeed a tube at that location.
+#The arguments it needs are an array on which to perform the action and the position (tuple) from which to remove.
+#The coordinates from which a tube should be removed are also given in the input file.
+#If a tube is removed, the function appends the output file accordingly.
+
+def deletion(array,position):
+    if array[position] == 0:
+        print("Cannot remove tube: No tube found at"+str(position))
+    else:
+        array[position] = 0
+        print(str(position)+" Removed")
+        f = open('myoutput.txt','a')
+        f.write(str(position)+" REMOVED\n")
+        f.close()
+        
+    return
+
+#This is the main function, which reads through the lines of the input file and depending on 
+#what the line contains, calls the corresponding function. 
+#The first line contains a number which is stored as the variable size, i.e the array size
+#The second line contains the initial positions of the tubes, which are stored in tuples and passed to the 
+#myinitarray function.
+#The same logic follows for the other two lines.
+
+def main(file_path):
+    with open(file_path, 'r') as input_file:
+        size = int(input_file.readline())
+        lines = input_file.readlines()
+        for line in lines[0:3]:
+            if line.count("(") > 2: 
+                line = line.strip("\n")
+                line = line.split(" ")
+                positions = []
+                for l in line:
+                    positions.append(ast.literal_eval(l))
+                    
+                ones = myinitarray(positions,size) 
+                
+            if line.count("(") == 2:
+                line = line.strip("\n")
+                line = line.split(" ")
+                positions = []
+                for l in line:
+                    positions.append(ast.literal_eval(l))
+                origin = positions[0]
+                destination = positions[1]
+                move_tube(ones,origin,destination)
+
+            if line.count("(") == 1:
+                line = line.strip("\n")
+                line = line.split(" ")
+                positions = []
+                for l in line:
+                    positions.append(ast.literal_eval(l))
+                positions = positions[0]
+                deletion(ones,positions)
+                
+    return 
+        
+        
+
+            
+
+        
+    
+
